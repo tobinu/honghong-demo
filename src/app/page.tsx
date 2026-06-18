@@ -656,7 +656,7 @@ function HomePageView(
             <SakuraParticles />
             {/* 顶部导航栏 */}
             <nav className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-4 py-3 bg-white/40 backdrop-blur-md border-b border-pink-100/50">
-                <Link href="/" className="text-lg font-bold text-yellow-500">
+                <Link href="/" className="text-lg font-bold text-gray-900">
                     哄哄模拟器
                 </Link>
                 {user ? (
@@ -693,7 +693,7 @@ function HomePageView(
             </nav>
             {}
             <div className="text-center mb-8 z-10">
-                <h1 className="text-4xl font-bold text-yellow-500 mb-2">哄哄模拟器</h1>
+                <h1 className="text-4xl font-bold text-gray-900 mb-2">哄哄模拟器</h1>
                 <p
                     className="text-pink-400 text-lg"
                     style={{
