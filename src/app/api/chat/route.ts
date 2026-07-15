@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { LLMClient, Config, HeaderUtils } from 'coze-coding-dev-sdk';
+import { streamIterator } from '@/lib/llm';
 import type { ChatRequest, Emotion } from '@/lib/types';
 import { EMOTION_DELTAS } from '@/lib/game-data';
 
@@ -39,10 +39,6 @@ export async function POST(request: NextRequest) {
       maxRounds,
     } = body;
 
-    const customHeaders = HeaderUtils.extractForwardHeaders(request.headers);
-    const config = new Config();
-    const client = new LLMClient(config, customHeaders);
-
     // 构建系统提示
     const systemPrompt = `你是一个恋爱模拟游戏中的女朋友角色。${personalityPrompt}
 
@@ -78,10 +74,8 @@ export async function POST(request: NextRequest) {
       { role: 'user' as const, content: userMessage },
     ];
 
-    const stream = client.stream(llmMessages, {
-      model: 'doubao-seed-2-0-lite-260215',
-      temperature: 0.8,
-    });
+    // 使用新的 LLM 适配层
+    const stream = streamIterator(llmMessages, { temperature: 0.8 });
 
     // 创建 SSE 流
     const encoder = new TextEncoder();
@@ -90,13 +84,10 @@ export async function POST(request: NextRequest) {
         let fullText = '';
         try {
           for await (const chunk of stream) {
-            if (chunk.content) {
-              const text = chunk.content.toString();
-              fullText += text;
-              // 发送文本块
-              const data = JSON.stringify({ type: 'text', content: text });
-              controller.enqueue(encoder.encode(`data: ${data}\n\n`));
-            }
+            fullText += chunk;
+            // 发送文本块
+            const data = JSON.stringify({ type: 'text', content: chunk });
+            controller.enqueue(encoder.encode(`data: ${data}\n\n`));
           }
 
           // 流结束后，解析情绪标签

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { LLMClient, Config, HeaderUtils } from 'coze-coding-dev-sdk';
+import { invoke } from '@/lib/llm';
 
 /**
  * 根据当前对话上下文生成 4 条建议回复
@@ -9,10 +9,6 @@ export async function POST(request: NextRequest) {
   try {
     const { personalityPrompt, scenarioDescription, messages, currentForgiveness, currentRound, maxRounds } =
       await request.json();
-
-    const customHeaders = HeaderUtils.extractForwardHeaders(request.headers);
-    const config = new Config();
-    const client = new LLMClient(config, customHeaders);
 
     // 构建最近的对话上下文（取最后6条消息）
     const recentMessages = messages.slice(-6);
@@ -78,10 +74,7 @@ ${lastUserMsg ? `玩家上次说的：「${lastUserMsg.content}」` : ''}
       },
     ];
 
-    const response = await client.invoke(llmMessages, {
-      model: 'doubao-seed-2-0-lite-260215',
-      temperature: 0.9,
-    });
+    const response = await invoke(llmMessages, { temperature: 0.9 });
 
     const content = response.content.trim();
 

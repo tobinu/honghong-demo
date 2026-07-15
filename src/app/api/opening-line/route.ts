@@ -1,14 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { LLMClient, Config, HeaderUtils } from 'coze-coding-dev-sdk';
+import { invoke } from '@/lib/llm';
 
 /** 为场景生成角色开场白 */
 export async function POST(request: NextRequest) {
   try {
     const { personalityPrompt, scenarioDescription } = await request.json();
-
-    const customHeaders = HeaderUtils.extractForwardHeaders(request.headers);
-    const config = new Config();
-    const client = new LLMClient(config, customHeaders);
 
     const systemPrompt = `你是恋爱模拟游戏中的女朋友角色。${personalityPrompt}
 
@@ -25,10 +21,7 @@ export async function POST(request: NextRequest) {
       { role: 'user' as const, content: '（你刚刚发现了这件事，请说出你的第一反应）' },
     ];
 
-    const response = await client.invoke(messages, {
-      model: 'doubao-seed-2-0-lite-260215',
-      temperature: 0.9,
-    });
+    const response = await invoke(messages, { temperature: 0.9 });
 
     return NextResponse.json({ openingLine: response.content.trim() });
   } catch (error) {

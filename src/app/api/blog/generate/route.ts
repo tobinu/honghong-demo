@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { LLMClient, Config, HeaderUtils } from 'coze-coding-dev-sdk';
-import { eq } from 'drizzle-orm';
+import { streamIterator } from '@/lib/llm';
 import { getDb, schema } from '@/lib/db';
 
 const TOPICS = [
@@ -44,10 +43,6 @@ export async function POST(request: NextRequest) {
   try {
     const topic = TOPICS[Math.floor(Math.random() * TOPICS.length)];
 
-    const customHeaders = HeaderUtils.extractForwardHeaders(request.headers);
-    const config = new Config();
-    const client = new LLMClient(config, customHeaders);
-
     const messages = [
       {
         role: 'system' as const,
@@ -73,15 +68,10 @@ export async function POST(request: NextRequest) {
     ];
 
     let fullText = '';
-    const stream = client.stream(messages, {
-      model: 'doubao-seed-2-0-lite-260215',
-      temperature: 0.9,
-    });
+    const stream = streamIterator(messages, { temperature: 0.9 });
 
     for await (const chunk of stream) {
-      if (chunk.content) {
-        fullText += chunk.content.toString();
-      }
+      fullText += chunk;
     }
 
     let jsonStr = fullText.trim();

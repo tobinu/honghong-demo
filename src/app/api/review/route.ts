@@ -1,15 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { LLMClient, Config, HeaderUtils } from 'coze-coding-dev-sdk';
+import { invoke } from '@/lib/llm';
 
 /** 对话复盘评价 API */
 export async function POST(request: NextRequest) {
   try {
     const { personalityPrompt, scenarioDescription, messages, finalForgiveness, result } =
       await request.json();
-
-    const customHeaders = HeaderUtils.extractForwardHeaders(request.headers);
-    const config = new Config();
-    const client = new LLMClient(config, customHeaders);
 
     const systemPrompt = `你是一个恋爱沟通专家，负责复盘一段"哄人"对话，给出专业评价。
 
@@ -45,10 +41,7 @@ export async function POST(request: NextRequest) {
       },
     ];
 
-    const response = await client.invoke(llmMessages, {
-      model: 'doubao-seed-2-0-lite-260215',
-      temperature: 0.7,
-    });
+    const response = await invoke(llmMessages, { temperature: 0.7 });
 
     const content = response.content.trim();
 
