@@ -14,7 +14,7 @@ interface BlogPostRow {
   slug: string;
   summary: string;
   content: string;
-  created_at: string;
+  createdAt: string;
 }
 
 function getEmoji(title: string): string {
@@ -77,7 +77,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         slug: rows[0].slug,
         summary: rows[0].summary,
         content: rows[0].content,
-        created_at: rows[0].created_at as unknown as string,
+        createdAt: rows[0].createdAt as unknown as string,
       };
     }
   } catch (err) {

@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
         slug: inserted[0].slug,
         summary: inserted[0].summary,
         content: inserted[0].content,
-        created_at: inserted[0].created_at,
+        createdAt: inserted[0].createdAt,
       };
 
       return NextResponse.json({ post, topic });
@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
           slug: retry[0].slug,
           summary: retry[0].summary,
           content: retry[0].content,
-          created_at: retry[0].created_at,
+          createdAt: retry[0].createdAt,
         };
         return NextResponse.json({ post, topic });
       }

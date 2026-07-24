@@ -11,10 +11,10 @@ export async function GET() {
         title: schema.blogPosts.title,
         slug: schema.blogPosts.slug,
         summary: schema.blogPosts.summary,
-        created_at: schema.blogPosts.created_at,
+        createdAt: schema.blogPosts.createdAt,
       })
       .from(schema.blogPosts)
-      .orderBy(desc(schema.blogPosts.created_at));
+      .orderBy(desc(schema.blogPosts.createdAt));
 
     return NextResponse.json({ posts });
   } catch (err) {

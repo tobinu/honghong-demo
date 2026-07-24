@@ -26,7 +26,7 @@ export async function GET(
       slug: posts[0].slug,
       summary: posts[0].summary,
       content: posts[0].content,
-      created_at: posts[0].created_at,
+      createdAt: posts[0].createdAt,
     };
 
     return NextResponse.json({ post });

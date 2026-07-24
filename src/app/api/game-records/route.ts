@@ -11,13 +11,15 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { scenario, finalScore, result } = body as {
-      scenario: string;
+    const { characterId, scenarioId, roundsPlayed, finalScore, result } = body as {
+      characterId: string;
+      scenarioId: string;
+      roundsPlayed: number;
       finalScore: number;
       result: string;
     };
 
-    if (!scenario || finalScore === undefined || !result) {
+    if (!characterId || !scenarioId || roundsPlayed === undefined || finalScore === undefined || !result) {
       return NextResponse.json({ error: "缺少必要参数" }, { status: 400 });
     }
 
@@ -26,7 +28,9 @@ export async function POST(request: NextRequest) {
       .insert(schema.gameRecords)
       .values({
         userId: payload.userId,
-        scenario,
+        characterId,
+        scenarioId,
+        roundsPlayed,
         finalScore,
         result,
       })
@@ -39,7 +43,9 @@ export async function POST(request: NextRequest) {
     const record = {
       id: inserted[0].id,
       user_id: inserted[0].userId,
-      scenario: inserted[0].scenario,
+      characterId: inserted[0].characterId,
+      scenarioId: inserted[0].scenarioId,
+      roundsPlayed: inserted[0].roundsPlayed,
       final_score: inserted[0].finalScore,
       result: inserted[0].result,
       played_at: inserted[0].playedAt,
@@ -63,7 +69,9 @@ export async function GET(request: NextRequest) {
     const records = await db
       .select({
         id: schema.gameRecords.id,
-        scenario: schema.gameRecords.scenario,
+        characterId: schema.gameRecords.characterId,
+        scenarioId: schema.gameRecords.scenarioId,
+        roundsPlayed: schema.gameRecords.roundsPlayed,
         final_score: schema.gameRecords.finalScore,
         result: schema.gameRecords.result,
         played_at: schema.gameRecords.playedAt,

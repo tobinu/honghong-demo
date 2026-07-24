@@ -19,6 +19,8 @@ export const users = pgTable(
 		password: text("password").notNull(),
 		avatarUrl: varchar("avatar_url", { length: 500 }),
 		nickname: varchar("nickname", { length: 50 }),
+		status: varchar("status", { length: 20 }).default("active").notNull(),
+		isAdmin: boolean("is_admin").default(false).notNull(),
 		createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 	},
 	(table) => [

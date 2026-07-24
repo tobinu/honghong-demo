@@ -13,7 +13,7 @@ interface BlogPostRow {
   title: string;
   slug: string;
   summary: string;
-  created_at: string;
+  createdAt: string;
 }
 
 function getEmoji(title: string): string {
@@ -46,14 +46,14 @@ export default async function BlogPage() {
         title: schema.blogPosts.title,
         slug: schema.blogPosts.slug,
         summary: schema.blogPosts.summary,
-        created_at: schema.blogPosts.created_at,
+        createdAt: schema.blogPosts.createdAt,
       })
       .from(schema.blogPosts)
-      .orderBy(desc(schema.blogPosts.created_at));
+      .orderBy(desc(schema.blogPosts.createdAt));
 
     posts = rows.map((r) => ({
       ...r,
-      created_at: r.created_at as unknown as string,
+      createdAt: r.createdAt as unknown as string,
     }));
   } catch (err) {
     console.error("Failed to fetch blog posts:", err);

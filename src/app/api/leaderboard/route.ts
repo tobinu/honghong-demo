@@ -36,7 +36,7 @@ export async function GET() {
         userId: rec.userId,
         username: '',
         bestScore: rec.finalScore,
-        achievedAt: rec.playedAt,
+        achievedAt: rec.playedAt.toISOString(),
       });
 
       if (leaderboard.length >= 20) break;
