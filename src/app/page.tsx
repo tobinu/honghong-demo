@@ -1,6 +1,8 @@
 "use client";
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
+import { GlowingEffect } from "@/components/ui/glowing-effect";
+import { TeamSectionBlock } from "@/components/ui/team-section-block-shadcnui";
 
 import type {
     Character,
@@ -53,7 +55,7 @@ function SakuraParticles() {
                     animationDelay: p.delay,
                     animationDuration: p.duration,
                     fontSize: p.size
-                }}>🌸
+                }}>✨
                         </div>)}
         </div>
     );
@@ -651,7 +653,7 @@ function HomePageView(
 ) {
     return (
         <div
-            className="min-h-screen bg-gradient-to-b from-pink-50 via-purple-50 to-pink-100 flex flex-col items-center justify-center p-4 relative overflow-hidden">
+            className="min-h-screen bg-gradient-to-b from-pink-50 via-purple-50 to-pink-100 flex flex-col items-center justify-center p-4 relative">
             {/* 樱花粒子 */}
             <SakuraParticles />
             {/* 顶部导航栏 */}
@@ -706,39 +708,49 @@ function HomePageView(
             </div>
             {}
             <div className="flex flex-col gap-4 w-full max-w-sm z-10">
-                {CHARACTERS.map(char => <button
-                    key={char.id}
-                    onClick={() => onSelectCharacter(char.id)}
-                    className="group relative bg-white/80 backdrop-blur-sm rounded-2xl p-4 flex items-center gap-4 shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border border-pink-100">
-                    {}
-                    <div
-                        className="w-16 h-20 rounded-xl overflow-hidden flex-shrink-0 ring-2 ring-pink-200 group-hover:ring-pink-400 transition-all">
-                        <img
-                            src={char.portraits.neutral}
-                            alt={char.name}
-                            className="w-full h-full object-cover object-top" />
-                    </div>
-                    {}
-                    <div className="text-left flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                            <span className="font-bold text-gray-800">{char.name}</span>
-                            <span className="text-xs text-pink-500 bg-pink-50 px-2 py-0.5 rounded-full">
-                                {char.title}
-                            </span>
+                {CHARACTERS.map(char => (
+                    <button
+                        key={char.id}
+                        onClick={() => onSelectCharacter(char.id)}
+                        className="group relative h-full rounded-[1.25rem] border border-pink-100 p-2 shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                    >
+                        <GlowingEffect
+                            spread={40}
+                            glow={true}
+                            disabled={false}
+                            proximity={64}
+                            inactiveZone={0.01}
+                            borderWidth={3}
+                        />
+                        <div className="relative z-10 flex items-center gap-4 overflow-hidden rounded-xl border border-pink-100 bg-background p-4">
+                            <div
+                                className="w-16 h-20 rounded-xl overflow-hidden flex-shrink-0 ring-2 ring-pink-200 group-hover:ring-pink-400 transition-all">
+                                <img
+                                    src={char.portraits.neutral}
+                                    alt={char.name}
+                                    className="w-full h-full object-cover object-top" />
+                            </div>
+                            <div className="text-left flex-1 min-w-0">
+                                <div className="flex items-center gap-2">
+                                    <span className="font-bold text-gray-800">{char.name}</span>
+                                    <span className="text-xs text-pink-500 bg-pink-50 px-2 py-0.5 rounded-full">
+                                        {char.title}
+                                    </span>
+                                </div>
+                                <p className="text-sm text-gray-500 mt-1 line-clamp-2">{char.description}</p>
+                            </div>
+                            <div
+                                className="text-pink-300 group-hover:text-pink-500 transition-colors flex-shrink-0">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                    <path
+                                        fillRule="evenodd"
+                                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                        clipRule="evenodd" />
+                                </svg>
+                            </div>
                         </div>
-                        <p className="text-sm text-gray-500 mt-1 line-clamp-2">{char.description}</p>
-                    </div>
-                    {}
-                    <div
-                        className="text-pink-300 group-hover:text-pink-500 transition-colors flex-shrink-0">
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                            <path
-                                fillRule="evenodd"
-                                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                clipRule="evenodd" />
-                        </svg>
-                    </div>
-                </button>)}
+                    </button>
+                ))}
             </div>
             {}
             <div className="flex gap-3 z-10">
@@ -756,6 +768,10 @@ function HomePageView(
               </Link>
             </div>
             <p className="text-gray-400 text-xs mt-4 z-10">10 轮对话内把原谅值哄到 60 以上就算成功</p>
+            {/* Team Section */}
+            <div className="w-full max-w-7xl mt-16">
+                <TeamSectionBlock />
+            </div>
         </div>
     );
 }

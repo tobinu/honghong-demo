@@ -65,8 +65,8 @@ export async function GET(request: NextRequest) {
         username: schema.users.username,
         nickname: schema.users.nickname,
         status: schema.users.status,
-        is_admin: schema.users.isAdmin,
-        created_at: schema.users.createdAt,
+        isAdmin: schema.users.isAdmin,
+        createdAt: schema.users.createdAt,
       })
       .from(schema.users)
       .where(whereClause)
@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
       .limit(pageSize)
       .offset((page - 1) * pageSize);
 
-    return NextResponse.json({ total: totalResult.total, data });
+    return NextResponse.json({ total: totalResult.total, users: data });
   } catch (err) {
     const message = err instanceof Error ? err.message : "查询用户列表失败";
     return NextResponse.json({ error: message }, { status: 500 });

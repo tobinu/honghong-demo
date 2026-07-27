@@ -65,16 +65,16 @@ export async function GET(request: NextRequest) {
     const data = await db
       .select({
         id: schema.gameRecords.id,
-        user_id: schema.gameRecords.userId,
+        userId: schema.gameRecords.userId,
         username: schema.users.username,
-        character_id: schema.gameRecords.characterId,
-        character_name: schema.characters.name,
-        scenario_id: schema.gameRecords.scenarioId,
-        scenario_title: schema.scenarios.title,
-        rounds_played: schema.gameRecords.roundsPlayed,
-        final_score: schema.gameRecords.finalScore,
+        characterId: schema.gameRecords.characterId,
+        characterName: schema.characters.name,
+        scenarioId: schema.gameRecords.scenarioId,
+        scenarioTitle: schema.scenarios.title,
+        roundsPlayed: schema.gameRecords.roundsPlayed,
+        finalScore: schema.gameRecords.finalScore,
         result: schema.gameRecords.result,
-        played_at: schema.gameRecords.playedAt,
+        playedAt: schema.gameRecords.playedAt,
       })
       .from(schema.gameRecords)
       .leftJoin(schema.users, eq(schema.gameRecords.userId, schema.users.id))
@@ -85,7 +85,7 @@ export async function GET(request: NextRequest) {
       .limit(pageSize)
       .offset((page - 1) * pageSize);
 
-    return NextResponse.json({ total: totalResult.total, data });
+    return NextResponse.json({ total: totalResult.total, orders: data });
   } catch (err) {
     const message = err instanceof Error ? err.message : "查询游戏记录失败";
     return NextResponse.json({ error: message }, { status: 500 });

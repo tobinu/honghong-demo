@@ -32,7 +32,7 @@ export default async function AdminLayout({
             哄哄模拟器 · 管理后台
           </h1>
         </header>
-        <main className="flex-1 overflow-auto bg-slate-50 p-6">{children}</main>
+        <main className="flex-1 overflow-y-auto overflow-x-visible bg-slate-50 p-6">{children}</main>
       </div>
     </div>
   );
