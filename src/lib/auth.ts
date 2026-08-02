@@ -4,15 +4,25 @@ import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
 const SALT_ROUNDS = 10;
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || process.env.COZE_SUPABASE_ANON_KEY || 'honghong-simulator-dev-secret-key'
-);
+
+function resolveJwtSecret(): Uint8Array {
+  const secret = process.env.JWT_SECRET || process.env.COZE_SUPABASE_ANON_KEY;
+  if (!secret) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('JWT_SECRET (or COZE_SUPABASE_ANON_KEY) must be set in production');
+    }
+    return new TextEncoder().encode('honghong-simulator-dev-secret-key');
+  }
+  return new TextEncoder().encode(secret);
+}
+
+const JWT_SECRET = resolveJwtSecret();
 export const TOKEN_NAME = 'auth-token';
 const TOKEN_MAX_AGE = 7 * 24 * 60 * 60; // 7 days
 
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: false,
+  secure: process.env.NODE_ENV === 'production',
   sameSite: 'lax' as const,
   maxAge: TOKEN_MAX_AGE,
   path: '/',
@@ -62,7 +72,7 @@ export function clearAuthCookieOnResponse(response: NextResponse): void {
     name: TOKEN_NAME,
     value: '',
     httpOnly: true,
-    secure: false,
+    secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     maxAge: 0,
     path: '/',

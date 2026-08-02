@@ -42,13 +42,13 @@ export async function POST(request: NextRequest) {
 
     const record = {
       id: inserted[0].id,
-      user_id: inserted[0].userId,
+      userId: inserted[0].userId,
       characterId: inserted[0].characterId,
       scenarioId: inserted[0].scenarioId,
       roundsPlayed: inserted[0].roundsPlayed,
-      final_score: inserted[0].finalScore,
+      finalScore: inserted[0].finalScore,
       result: inserted[0].result,
-      played_at: inserted[0].playedAt,
+      playedAt: inserted[0].playedAt,
     };
 
     return NextResponse.json({ record, message: "游戏记录已保存" });
@@ -72,9 +72,9 @@ export async function GET(request: NextRequest) {
         characterId: schema.gameRecords.characterId,
         scenarioId: schema.gameRecords.scenarioId,
         roundsPlayed: schema.gameRecords.roundsPlayed,
-        final_score: schema.gameRecords.finalScore,
+        finalScore: schema.gameRecords.finalScore,
         result: schema.gameRecords.result,
-        played_at: schema.gameRecords.playedAt,
+        playedAt: schema.gameRecords.playedAt,
       })
       .from(schema.gameRecords)
       .where(eq(schema.gameRecords.userId, payload.userId))

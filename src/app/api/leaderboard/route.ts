@@ -1,62 +1,44 @@
 import { NextResponse } from 'next/server';
-import { desc, inArray } from 'drizzle-orm';
+import { sql, desc } from 'drizzle-orm';
 import { getDb, schema } from '@/lib/db';
 
 export async function GET() {
   try {
     const db = getDb();
 
-    const allRecords = await db
+    const topUsers = await db
       .select({
         userId: schema.gameRecords.userId,
-        finalScore: schema.gameRecords.finalScore,
-        playedAt: schema.gameRecords.playedAt,
+        bestScore: sql<number>`MAX(${schema.gameRecords.finalScore})`.as('best_score'),
+        achievedAt: sql<string>`(SELECT ${schema.gameRecords.playedAt} FROM ${schema.gameRecords} WHERE ${schema.gameRecords.userId} = ${schema.gameRecords.userId} ORDER BY ${schema.gameRecords.finalScore} DESC LIMIT 1)`.as('achieved_at'),
       })
       .from(schema.gameRecords)
-      .orderBy(desc(schema.gameRecords.finalScore))
-      .limit(200);
+      .groupBy(schema.gameRecords.userId)
+      .orderBy(desc(sql`best_score`))
+      .limit(20);
 
-    const seenUsers = new Set<number>();
-    const userIds: number[] = [];
-    const leaderboard: {
-      rank: number;
-      userId: number;
-      username: string;
-      bestScore: number;
-      achievedAt: string;
-    }[] = [];
-
-    for (const rec of allRecords) {
-      if (seenUsers.has(rec.userId)) continue;
-      seenUsers.add(rec.userId);
-      userIds.push(rec.userId);
-
-      leaderboard.push({
-        rank: leaderboard.length + 1,
-        userId: rec.userId,
-        username: '',
-        bestScore: rec.finalScore,
-        achievedAt: rec.playedAt.toISOString(),
-      });
-
-      if (leaderboard.length >= 20) break;
+    if (topUsers.length === 0) {
+      return NextResponse.json({ leaderboard: [] });
     }
 
-    if (userIds.length > 0) {
-      const users = await db
-        .select({ id: schema.users.id, username: schema.users.username })
-        .from(schema.users)
-        .where(inArray(schema.users.id, userIds));
+    const userIds = topUsers.map((r) => r.userId);
+    const users = await db
+      .select({ id: schema.users.id, username: schema.users.username })
+      .from(schema.users)
+      .where(sql`${schema.users.id} IN ${userIds}`);
 
-      const userMap = new Map<number, string>();
-      for (const u of users) {
-        userMap.set(u.id, u.username);
-      }
-
-      for (const entry of leaderboard) {
-        entry.username = userMap.get(entry.userId) || '未知用户';
-      }
+    const userMap = new Map<number, string>();
+    for (const u of users) {
+      userMap.set(u.id, u.username);
     }
+
+    const leaderboard = topUsers.map((rec, idx) => ({
+      rank: idx + 1,
+      userId: rec.userId,
+      username: userMap.get(rec.userId) || '未知用户',
+      bestScore: rec.bestScore,
+      achievedAt: rec.achievedAt.toISOString(),
+    }));
 
     return NextResponse.json({ leaderboard });
   } catch (err) {

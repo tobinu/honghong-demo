@@ -109,8 +109,8 @@ export async function PUT(request: NextRequest) {
         username: schema.users.username,
         nickname: schema.users.nickname,
         status: schema.users.status,
-        is_admin: schema.users.isAdmin,
-        created_at: schema.users.createdAt,
+        isAdmin: schema.users.isAdmin,
+        createdAt: schema.users.createdAt,
       });
 
     if (updated.length === 0) {

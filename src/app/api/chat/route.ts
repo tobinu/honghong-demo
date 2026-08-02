@@ -12,17 +12,13 @@ function parseEmotionTag(text: string): { cleanText: string; emotion: Emotion; d
     const emotion = match[1] as Emotion;
     const cleanText = text.replace(emotionRegex, '').trim();
     const deltaRange = EMOTION_DELTAS[emotion];
-    const delta = Math.floor(
-      Math.random() * (deltaRange.max - deltaRange.min + 1) + deltaRange.min
-    );
+    const delta = Math.round((deltaRange.max + deltaRange.min) / 2);
     return { cleanText, emotion, delta };
   }
 
   // 如果没有情绪标签，默认 wronged
   const deltaRange = EMOTION_DELTAS.wronged;
-  const delta = Math.floor(
-    Math.random() * (deltaRange.max - deltaRange.min + 1) + deltaRange.min
-  );
+  const delta = Math.round((deltaRange.max + deltaRange.min) / 2);
   return { cleanText: text, emotion: 'wronged', delta };
 }
 
