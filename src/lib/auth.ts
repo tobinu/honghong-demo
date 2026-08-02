@@ -4,19 +4,23 @@ import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
 const SALT_ROUNDS = 10;
+const DEV_FALLBACK_SECRET = 'honghong-simulator-dev-secret-key';
+let cachedSecret: Uint8Array | null = null;
 
-function resolveJwtSecret(): Uint8Array {
+function getJwtSecret(): Uint8Array {
+  if (cachedSecret) return cachedSecret;
   const secret = process.env.JWT_SECRET || process.env.COZE_SUPABASE_ANON_KEY;
   if (!secret) {
     if (process.env.NODE_ENV === 'production') {
       throw new Error('JWT_SECRET (or COZE_SUPABASE_ANON_KEY) must be set in production');
     }
-    return new TextEncoder().encode('honghong-simulator-dev-secret-key');
+    cachedSecret = new TextEncoder().encode(DEV_FALLBACK_SECRET);
+    return cachedSecret;
   }
-  return new TextEncoder().encode(secret);
+  cachedSecret = new TextEncoder().encode(secret);
+  return cachedSecret;
 }
 
-const JWT_SECRET = resolveJwtSecret();
 export const TOKEN_NAME = 'auth-token';
 const TOKEN_MAX_AGE = 7 * 24 * 60 * 60; // 7 days
 
@@ -44,13 +48,13 @@ export async function createToken(payload: { userId: number; username: string })
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
     .setExpirationTime(`${TOKEN_MAX_AGE}s`)
-    .sign(JWT_SECRET);
+    .sign(getJwtSecret());
 }
 
 /** Verify and decode a JWT token */
 export async function verifyToken(token: string): Promise<{ userId: number; username: string } | null> {
   try {
-    const { payload } = await jwtVerify(token, JWT_SECRET);
+    const { payload } = await jwtVerify(token, getJwtSecret());
     return payload as unknown as { userId: number; username: string };
   } catch {
     return null;
