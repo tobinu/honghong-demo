@@ -653,7 +653,7 @@ function HomePageView(
 ) {
     return (
         <div
-            className="min-h-screen bg-gradient-to-b from-pink-50 via-purple-50 to-pink-100 flex flex-col items-center justify-center p-4 relative">
+            className="min-h-screen bg-white flex flex-col items-center justify-center p-4 relative">
             {/* 樱花粒子 */}
             <SakuraParticles />
             {/* 顶部导航栏 */}
@@ -695,7 +695,7 @@ function HomePageView(
             </nav>
             {}
             <div className="text-center mb-8 z-10">
-                <h1 className="text-4xl font-bold text-gray-900 mb-2">哄哄模拟器</h1>
+                <h1 className="text-4xl font-bold text-purple-600 mb-2">哄哄模拟器</h1>
                 <p
                     className="text-pink-400 text-lg"
                     style={{
