@@ -10,7 +10,6 @@ export async function GET() {
       .select({
         userId: schema.gameRecords.userId,
         bestScore: sql<number>`MAX(${schema.gameRecords.finalScore})`.as('best_score'),
-        achievedAt: sql<string>`(SELECT ${schema.gameRecords.playedAt} FROM ${schema.gameRecords} WHERE ${schema.gameRecords.userId} = ${schema.gameRecords.userId} ORDER BY ${schema.gameRecords.finalScore} DESC LIMIT 1)`.as('achieved_at'),
       })
       .from(schema.gameRecords)
       .groupBy(schema.gameRecords.userId)
@@ -32,12 +31,28 @@ export async function GET() {
       userMap.set(u.id, u.username);
     }
 
+    const bestScoreRows = await db
+      .select({
+        userId: schema.gameRecords.userId,
+        playedAt: schema.gameRecords.playedAt,
+      })
+      .from(schema.gameRecords)
+      .where(sql`${schema.gameRecords.userId} IN ${userIds}`)
+      .orderBy(desc(schema.gameRecords.finalScore), desc(schema.gameRecords.playedAt));
+
+    const bestScoreAtMap = new Map<number, string>();
+    for (const row of bestScoreRows) {
+      if (!bestScoreAtMap.has(row.userId)) {
+        bestScoreAtMap.set(row.userId, row.playedAt.toISOString());
+      }
+    }
+
     const leaderboard = topUsers.map((rec, idx) => ({
       rank: idx + 1,
       userId: rec.userId,
       username: userMap.get(rec.userId) || '未知用户',
       bestScore: rec.bestScore,
-      achievedAt: rec.achievedAt.toISOString(),
+      achievedAt: bestScoreAtMap.get(rec.userId) || new Date().toISOString(),
     }));
 
     return NextResponse.json({ leaderboard });
