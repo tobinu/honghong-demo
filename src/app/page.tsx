@@ -55,7 +55,7 @@ function SakuraParticles() {
                     animationDelay: p.delay,
                     animationDuration: p.duration,
                     fontSize: p.size
-                }}>✨
+                }}>🎉
                         </div>)}
         </div>
     );
