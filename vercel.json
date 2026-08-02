@@ -1,5 +1,5 @@
 {
-  "buildCommand": "pnpm add -D typescript && pnpm build",
-  "installCommand": "pnpm install --shamefully-hoist",
+  "buildCommand": "pnpm build",
+  "installCommand": "pnpm install --shamefully-hoist --registry=https://registry.npmjs.org",
   "framework": "nextjs"
 }
