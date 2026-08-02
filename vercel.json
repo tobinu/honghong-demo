@@ -1,5 +1,5 @@
 {
-  "buildCommand": "pnpm build",
+  "buildCommand": "pnpm add -D typescript && pnpm build",
   "installCommand": "pnpm install --shamefully-hoist",
   "framework": "nextjs"
 }
